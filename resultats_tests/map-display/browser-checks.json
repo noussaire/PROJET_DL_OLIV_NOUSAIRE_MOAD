@@ -1,0 +1,44 @@
+[
+  {
+    "ok": true,
+    "width": 1440,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé"
+    ],
+    "render500Ms": 21.400000035762787,
+    "raw": 179,
+    "hybrid": 219
+  },
+  {
+    "ok": true,
+    "width": 768,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé"
+    ],
+    "render500Ms": 11,
+    "raw": 179,
+    "hybrid": 219
+  },
+  {
+    "ok": true,
+    "width": 390,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé"
+    ],
+    "render500Ms": 12.700000047683716,
+    "raw": 179,
+    "hybrid": 219
+  }
+]

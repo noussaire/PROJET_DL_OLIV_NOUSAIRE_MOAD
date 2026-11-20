@@ -1,0 +1,47 @@
+[
+  {
+    "ok": true,
+    "width": 1440,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé",
+      "ExG API → fiche : valeur, catégorie, seuils et méthodologie accessible"
+    ],
+    "render500Ms": 16.19999998807907,
+    "raw": 179,
+    "hybrid": 219
+  },
+  {
+    "ok": true,
+    "width": 768,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé",
+      "ExG API → fiche : valeur, catégorie, seuils et méthodologie accessible"
+    ],
+    "render500Ms": 8.299999952316284,
+    "raw": 179,
+    "hybrid": 219
+  },
+  {
+    "ok": true,
+    "width": 390,
+    "checks": [
+      "mode points : rendu et clic",
+      "mode rectangles : rendu et clic",
+      "mode both : rendu et clic",
+      "GPS et projection Leaflet : zooms 17/19/18 et déplacements",
+      "500 points : Canvas partagé",
+      "ExG API → fiche : valeur, catégorie, seuils et méthodologie accessible"
+    ],
+    "render500Ms": 8.200000047683716,
+    "raw": 179,
+    "hybrid": 219
+  }
+]

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vérification cartographique OliveSmart</title>
+<style>
+body { margin:0; color:#1f2937; background:#fafbfa; font:13px system-ui; }
+h1 { font-size:14px; margin:8px 20px; }
+#browserResult { margin:4px 20px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+iframe { display:block; width:100%; height:calc(100vh - 70px); border:0; }
+</style>
+<h1>Test OliveSmart · carte et ExG</h1>
+<p id="browserResult" role="status">Vérification en cours…</p>
+<iframe id="app" src="/frontend-react/index.html" title="Application OliveSmart en test"></iframe>
+<script>
+const result = document.getElementById('browserResult');
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+const assert = (condition, message) => { if (!condition) throw Error(message); };
+document.getElementById('app').addEventListener('load', async event => {
+    const w = event.target.contentWindow;
+    const checks = [];
+    try {
+        for (let n = 0; n < 80 && !w.eval('typeof map !== "undefined" && map'); n++) await pause(100);
+        const map = w.eval('map');
+        assert(map, 'Leaflet doit démarrer');
+        if (innerWidth < 768) {
+            assert(w.document.getElementById('viewerWrapper').getBoundingClientRect().height >= 360,
+                'Carte mobile non écrasée par les barres d’outils');
+            assert(w.getComputedStyle(w.document.body).overflowY !== 'hidden', 'Défilement mobile disponible');
+        }
+        const trees = Array.from({length:219}, (_, i) => ({
+            id:i+1, lat:31.6336+Math.floor(i/20)*0.000025, lng:-7.9655+(i%20)*0.000025,
+            lat_min:31.63359+Math.floor(i/20)*0.000025, lat_max:31.63361+Math.floor(i/20)*0.000025,
+            lng_min:-7.96551+(i%20)*0.000025, lng_max:-7.96549+(i%20)*0.000025,
+            source:i%4===0?'OPENCV':'YOLO', sources:[i%4===0?'OPENCV':'YOLO'],
+            healthStatus:i<32.7?'SUSPECT':i<65.4?'STRESS':'SAIN', confidence:0.8,
+            crownDiameterMeters:5, crownAreaM2:19.6,
+            exgMetadata:{value:i-100,category:i<32.7?'LOW':i<65.4?'INTERMEDIATE':'HIGH',
+                formula:'2G-R-B',rgbScale:'UNNORMALIZED_0_255',classificationMethod:'PERCENTILES_15_30',
+                lowerThreshold:-67.3,upperThreshold:-34.6,populationSize:219,nominalWindowSize:7,
+                sampleWidth:7,sampleHeight:7,samplePixelCount:49,healthValidated:false}
+        }));
+        const payload = {success:true, mode:'LIVE', engine:'YOLO+OPENCV', model:'TEST UI',
+            totalTrees:219, trees, meanConfidence:0.8, meanCrownDiameterMeters:5,
+            analysisMetadata:{yoloInPolygonCount:179,hybridCount:219}};
+        w.OliveTrace.analyze = async () => payload;
+        await w.eval('runYoloAnalysis()');
+        const mode = w.document.getElementById('treeDisplayMode');
+        assert(mode.value==='points','Points uniquement doit être sélectionné par défaut');
+        const controller=w.eval('mapResultsController');
+        const group=w.eval('leafletBoxesLayer');
+        assert(w.document.getElementById('resYoloRaw').textContent==='179','Comptage YOLO brut 179');
+        assert(w.document.getElementById('resHybridCount').textContent==='219','Comptage hybride 219');
+        for (const value of ['points','rectangles','both']) {
+            mode.value=value; mode.dispatchEvent(new w.Event('change'));
+            assert(group.getLayers().length===(value==='both'?438:219), 'Nombre de formes en mode '+value);
+            const entry=controller.entries.get(8);
+            (entry.point||entry.rect).fire('click');
+            assert(w.document.getElementById('treeDetailContainer').textContent.includes('Arbre #8'),'Clic en mode '+value);
+            assert(!/centenaire|ans \(/i.test(w.document.getElementById('treeDetailContainer').textContent),'Pas d’âge inventé');
+            checks.push('mode '+value+' : rendu et clic');
+        }
+        mode.value='points'; mode.dispatchEvent(new w.Event('change'));
+        const point=controller.entries.get(8).point;
+        const original=point.getLatLng(); const radius=point.getRadius();
+        for (const zoom of [17,19,18]) {
+            map.setZoom(zoom,{animate:false});
+            map.panTo([31.6337+zoom/100000,-7.9651],{animate:false});
+            await pause(100);
+            assert(point.getLatLng().lat===original.lat && point.getLatLng().lng===original.lng,'GPS stable au zoom '+zoom);
+            const expected=map.latLngToLayerPoint(original);
+            assert(Math.abs(point._point.x-expected.x)<=1 && Math.abs(point._point.y-expected.y)<=1,'Projection réelle Leaflet au zoom '+zoom);
+            assert(point.getRadius()===radius,'Rayon en pixels stable');
+        }
+        checks.push('GPS et projection Leaflet : zooms 17/19/18 et déplacements');
+        assert(controller.entries.get(8).point.getLatLng().lat===trees[7].lat,'Latitude API conservée exactement');
+        assert(controller.entries.get(8).point.getLatLng().lng===trees[7].lng,'Longitude API conservée exactement');
+        assert(w.document.getElementById('resYoloRaw').textContent==='179','Comptage brut conservé après navigation');
+        const many=Array.from({length:500},(_,i)=>({...trees[i%219], id:i+1}));
+        const started=performance.now();
+        controller.render(many,8);
+        assert(group.getLayers().length===500,'500 points sans rectangles');
+        assert(new Set(group.getLayers().map(p=>p.options.renderer)).size===1,'Un seul renderer Canvas partagé');
+        const render500Ms=performance.now()-started;
+        checks.push('500 points : Canvas partagé');
+        controller.render(w.eval('activeTreesList'),8);
+        assert(w.document.getElementById('resYoloRaw').textContent==='179','Aucun point brut inventé');
+        map.setView([31.6338,-7.9653],18,{animate:false});
+        const detail=w.document.getElementById('treeDetailContainer');
+        assert(detail.textContent.includes('Valeur ExG calculée : -93'),'Valeur ExG API affichée après mappage frontend');
+        assert(detail.textContent.includes('relativement moins verte'),'Libellé descriptif de la catégorie ExG');
+        assert(w.OliveMapResults.exgInfo(w.eval('activeTreesList[7]')).verified,'Métadonnées ExG transmises et cohérentes');
+        const method=w.document.getElementById('exgMethodology');
+        detail.querySelector('a[href="#exgMethodology"]').click();
+        await pause(100);
+        assert(method.open,'Lien de la fiche ouvre la méthodologie');
+        assert(method.textContent.includes('7 × 7'),'Méthodologie de la fenêtre réelle');
+        assert(method.textContent.includes('Cinq arbres ou moins'),'Exception des seuils fixes documentée');
+        assert(method.scrollWidth<=method.clientWidth+1,'Méthodologie sans débordement horizontal');
+        assert(detail.scrollWidth<=detail.clientWidth+1,'Fiche ExG sans débordement horizontal');
+        checks.push('ExG API → fiche : valeur, catégorie, seuils et méthodologie accessible');
+        method.scrollIntoView({block:'start'});
+        result.textContent='PASS · données synthétiques · '+checks.join(' · ');
+        result.title=result.textContent;
+        document.title='PASS · OliveSmart carte';
+        await fetch('/__map_report',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ok:true,width:innerWidth,checks,render500Ms,raw:179,hybrid:219})});
+    } catch(error) {
+        result.textContent='FAIL · '+error.message;
+        document.title='FAIL · OliveSmart carte';
+        await fetch('/__map_report',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ok:false,width:innerWidth,error:String(error),checks})});
+        console.error(error);
+    }
+});
+</script>
+</html>

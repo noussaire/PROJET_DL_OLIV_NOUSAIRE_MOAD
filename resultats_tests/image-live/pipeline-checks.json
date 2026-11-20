@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "comparisons": [
+    {
+      "width": 1440,
+      "imageId": "7bcab73b-8425-47b7-864d-768c3a1f046d",
+      "pythonCount": 2,
+      "javaCount": 2
+    },
+    {
+      "width": 1440,
+      "imageId": "7bcab73b-8425-47b7-864d-768c3a1f046d",
+      "pythonCount": 1,
+      "javaCount": 1
+    },
+    {
+      "width": 768,
+      "imageId": "fd20cec9-417a-488f-9de8-558086cf164d",
+      "pythonCount": 2,
+      "javaCount": 2
+    },
+    {
+      "width": 390,
+      "imageId": "6cdff13c-127c-4f1e-b83e-408a3812938c",
+      "pythonCount": 2,
+      "javaCount": 2
+    }
+  ]
+}

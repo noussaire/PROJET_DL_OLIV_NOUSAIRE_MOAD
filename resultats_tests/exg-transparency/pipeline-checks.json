@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "treesChecked": 23,
+  "legacyCounts": {
+    "raw": 15,
+    "hybrid": 23
+  },
+  "example": {
+    "value": 26.612245559692383,
+    "category": "LOW",
+    "formula": "2G-R-B",
+    "rgbScale": "UNNORMALIZED_0_255",
+    "classificationMethod": "PERCENTILES_15_30",
+    "lowerThreshold": 26.75306167602539,
+    "upperThreshold": 27.824490356445313,
+    "populationSize": 23,
+    "nominalWindowSize": 7,
+    "sampleWidth": 7,
+    "sampleHeight": 7,
+    "samplePixelCount": 49,
+    "sampling": "ALL_RGB_PIXELS_AROUND_FINAL_CENTER_CLIPPED_TO_MOSAIC",
+    "healthValidated": false
+  },
+  "parameters": {
+    "imgsz": 1280,
+    "conf": 0.2,
+    "iou": 0.5,
+    "max_det": 1000,
+    "device": "cpu"
+  }
+}

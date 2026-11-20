@@ -1,0 +1,100 @@
+<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test LIVE image OliveSmart</title>
+<style>body{margin:0;background:#fafbfa;font:13px system-ui;color:#1f2937}h1{font-size:14px;margin:8px 20px}#result{margin:4px 20px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}iframe{border:0;width:100%;height:calc(100vh - 70px);display:block}</style>
+<h1>Test LIVE image · fichier local autorisé</h1><p id="result">Vérification en cours…</p>
+<iframe id="app" src="/frontend-react/index.html" title="OliveSmart image LIVE"></iframe>
+<img src="/__await_upload" hidden alt="">
+<script>
+const assert=(ok,message)=>{if(!ok)throw Error(message)},pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function until(fn,message){for(let n=0;n<200;n++){if(fn())return;await pause(100);}throw Error(message);}
+document.getElementById('app').addEventListener('load',async event=>{
+ const w=event.target.contentWindow,checks=[],javaResults=[];
+ try {
+  await until(()=>w.eval('typeof uploadImageLive!=="undefined" && uploadImageLive'),'Interface non initialisée');
+  const config=await (await fetch('/__upload_config')).json();
+  const originalFetch=w.fetch.bind(w);
+  w.fetch=async (url,options)=>{
+   if(String(url).includes('/api/v1/images/analyser')){
+    const response=await originalFetch(config.javaUrl,options);
+    if(response.ok)javaResults.push(await response.clone().json());
+    return response;
+   }return originalFetch(url,options);
+  };
+  const fileBlob=await (await fetch('/frontend-react/demo_drone_orthophoto.jpg')).blob();
+  const file=new w.File([fileBlob],'image-locale.jpg',{type:'image/jpeg'});
+  const input=w.document.getElementById('mediaFileInput'),transfer=new w.DataTransfer();transfer.items.add(file);input.files=transfer.files;
+  input.dispatchEvent(new w.Event('change',{bubbles:true}));
+  const controller=w.eval('uploadImageLive');
+  await until(()=>w.document.getElementById('imageLiveMessage').textContent.includes('prêt'),'Image non chargée');
+  assert(w.document.getElementById('imageAnalysisScope').value==='whole','Image entière par défaut');
+  w.document.getElementById('btnAnalyzeYolo').click();
+  await until(()=>controller.getResult(),'Analyse réelle non reçue : '+w.document.getElementById('imageLiveMessage').textContent);
+  const whole=controller.getResult();assert(javaResults.length===1,'Une seule requête Java');
+  assert(JSON.stringify(whole.detections)===JSON.stringify(javaResults[0].detections),'Boîtes Java = frontend');
+  assert(Number(w.document.getElementById('resYoloRaw').textContent)===whole.totalDetections,'Comptage affiché identique à Java');
+  assert(whole.mode==='LIVE'&&whole.engine==='YOLO','Aucun résultat DEMO');
+  checks.push('fichier réel → Java → Python YOLO → rendu, boîtes et comptages identiques');
+  const canvas=w.document.getElementById('imageRoiCanvas'),view=w.document.getElementById('imageDetectionView');
+  for(const mode of ['points','rectangles','both']){
+   view.value=mode;view.dispatchEvent(new w.Event('change'));
+   if(whole.detections.length){
+    const target=whole.detections[Math.min(1,whole.detections.length-1)],rect=canvas.getBoundingClientRect();
+    const f=w.OliveImageUpload.fit(canvas.clientWidth,canvas.clientHeight,whole.imageWidth,whole.imageHeight);
+    canvas.dispatchEvent(new w.PointerEvent('pointerdown',{clientX:rect.left+f.x+target.centerPx[0]*f.scale,clientY:rect.top+f.y+target.centerPx[1]*f.scale,pointerId:1,pointerType:'touch',bubbles:true}));
+    assert(w.document.getElementById('treeDetailContainer').textContent.includes('Arbre #'+target.id),'Clic réel sur '+mode);
+   }
+   assert(JSON.stringify(controller.getResult().detections)===JSON.stringify(whole.detections),'Pixels conservés en mode '+mode);
+  }
+  checks.push('points, rectangles, les deux, sélection tactile et coordonnées pixels');
+  if(innerWidth===1440){
+   const scope=w.document.getElementById('imageAnalysisScope');scope.value='roi';scope.dispatchEvent(new w.Event('change'));
+   const rect=canvas.getBoundingClientRect(),f=w.OliveImageUpload.fit(canvas.clientWidth,canvas.clientHeight,whole.imageWidth,whole.imageHeight);
+   for(const [x,y] of [[1,1],[whole.imageWidth-1,1],[whole.imageWidth-1,whole.imageHeight/2],[1,whole.imageHeight/2]]){
+    canvas.dispatchEvent(new w.PointerEvent('pointerdown',{clientX:rect.left+f.x+x*f.scale,clientY:rect.top+f.y+y*f.scale,pointerId:2,pointerType:'touch',bubbles:true}));
+    canvas.dispatchEvent(new w.PointerEvent('pointerup',{pointerId:2,pointerType:'touch',bubbles:true}));
+   }
+   w.document.getElementById('imageRoiEdit').click();await controller.analyze();
+   const cropped=controller.getResult();assert(cropped&&cropped.roiApplied,'ROI réelle exécutée');
+   assert(cropped.totalDetections<=whole.totalDetections,'Filtrage des centres ROI');
+   checks.push('ROI tactile réelle, filtrage côté Python et coordonnées originales');
+  }
+  // An intentionally delayed mocked reply verifies lifecycle only; it is never a production result.
+  await controller.loadFile(file);
+  let finish,oldRequest;
+  w.fetch=async(url,options)=>{oldRequest=JSON.parse(options.body);return new Promise(resolve=>finish=resolve);};
+  const pending=controller.analyze();await until(()=>finish,'Requête différée absente');
+  await controller.loadFile(new w.File([fileBlob],'nouvelle-image.jpg',{type:'image/jpeg'}));
+  finish({ok:true,json:async()=>({...whole,imageId:oldRequest.imageId})});await pending;
+  assert(controller.getResult()===null,'Réponse ancienne rejetée après changement de fichier');
+  checks.push('changement d’image : réponse obsolète ignorée');
+  w.fetch=async()=>({ok:false,status:503,json:async()=>({error:'Serveur CPU occupé'})});await controller.analyze();
+  assert(controller.getResult()===null&&w.document.getElementById('imageLiveMessage').textContent.includes('occupé'),'Erreur explicite sans simulation');
+  const savedTimeout=w.setTimeout.bind(w);
+  w.setTimeout=(fn,ms,...args)=>savedTimeout(fn,ms===65000?1:ms,...args);
+  w.fetch=async(url,options)=>new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new w.DOMException('Aborted','AbortError'))));
+  await controller.analyze();w.setTimeout=savedTimeout;
+  assert(controller.getResult()===null&&w.document.getElementById('imageLiveMessage').textContent.includes('Délai'),'Délai explicite sans résultat');
+  checks.push('serveur indisponible et délai : aucun résultat simulé');
+  const demo=w.document.getElementById('demoMode');demo.checked=true;demo.dispatchEvent(new w.Event('change'));
+  w.eval('runImageAnalysis()');await pause(550);
+  assert(w.eval('imageDetectedTrees.length>0 && imageDetectedTrees.every(t=>t.source==="DEMO")'),'Simulation DEMO conservée');
+  demo.checked=false;demo.dispatchEvent(new w.Event('change'));checks.push('DEMO conservé et séparé du LIVE');
+  const exifBytes=Uint8Array.from(atob(config.exif),c=>c.charCodeAt(0));
+  await controller.loadFile(new w.File([exifBytes],'orientation.jpg',{type:'image/jpeg'}));
+  assert(w.document.getElementById('imageLiveMessage').textContent.includes('80 × 120'),'EXIF navigateur identique au référentiel Python');
+  checks.push('aperçu EXIF orienté 80 × 120 identique à Python');
+  w.fetch=async()=>({ok:true,json:async()=>({...whole,imageId:'placeholder'})});
+  await controller.loadFile(file);
+  w.fetch=async(url,options)=>({ok:true,json:async()=>({...whole,imageId:JSON.parse(options.body).imageId})});
+  await controller.analyze();
+  // Restore the genuine result to the UI with the same file, without another CPU call.
+  assert(controller.getResult().totalDetections===whole.totalDetections,'Rendu final du résultat réel');
+  assert(w.document.getElementById('resSains').parentElement.parentElement.classList.contains('hidden'),'Pas de catégories ExG pour les images LIVE');
+  w.document.getElementById('imageUploadContainer').scrollIntoView({block:'center'});
+  const report={ok:true,width:innerWidth,checks,javaResults,frontendCount:whole.totalDetections};
+  document.getElementById('result').textContent='PASS · '+checks.join(' · ');
+  await fetch('/__upload_report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(report)});
+ }catch(error){document.getElementById('result').textContent='FAIL · '+error.message;console.error(error);
+  await fetch('/__upload_report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:false,width:innerWidth,error:String(error),checks})});}
+});
+</script></html>

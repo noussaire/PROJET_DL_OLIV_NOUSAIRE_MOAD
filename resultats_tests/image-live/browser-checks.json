@@ -1,0 +1,315 @@
+[
+  {
+    "ok": true,
+    "width": 1440,
+    "checks": [
+      "fichier réel → Java → Python YOLO → rendu, boîtes et comptages identiques",
+      "points, rectangles, les deux, sélection tactile et coordonnées pixels",
+      "ROI tactile réelle, filtrage côté Python et coordonnées originales",
+      "changement d’image : réponse obsolète ignorée",
+      "serveur indisponible et délai : aucun résultat simulé",
+      "DEMO conservé et séparé du LIVE",
+      "aperçu EXIF orienté 80 × 120 identique à Python"
+    ],
+    "javaResults": [
+      {
+        "success": true,
+        "mode": "LIVE",
+        "engine": "YOLO",
+        "imageId": "7bcab73b-8425-47b7-864d-768c3a1f046d",
+        "coordinateSystem": "IMAGE_PIXELS",
+        "imageWidth": 640,
+        "imageHeight": 640,
+        "format": "JPEG",
+        "sourceWidth": 640,
+        "sourceHeight": 640,
+        "orientationApplied": false,
+        "transparencyOnWhite": false,
+        "totalDetections": 2,
+        "rawDetectionCount": 2,
+        "roiApplied": false,
+        "detections": [
+          {
+            "id": 1,
+            "bboxPx": [
+              0.01690053939819336,
+              154.13922119140625,
+              7.347291469573975,
+              187.68441772460938
+            ],
+            "centerPx": [
+              3.682096004486084,
+              170.9118194580078
+            ],
+            "confidence": 0.279859334230423,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          },
+          {
+            "id": 2,
+            "bboxPx": [
+              248.0098876953125,
+              419.18023681640625,
+              271.21124267578125,
+              456.28070068359375
+            ],
+            "centerPx": [
+              259.6105651855469,
+              437.73046875
+            ],
+            "confidence": 0.2010429948568344,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          }
+        ],
+        "model": "YOLO11m V1",
+        "modelPath": "C:\\Users\\pc\\Downloads\\OliveSmart-Project-main\\OliveSmart-Project-main\\models\\yolo11m_olivesmart_v1.pt",
+        "inferenceParameters": {
+          "imgsz": 1280,
+          "conf": 0.2,
+          "iou": 0.5,
+          "max_det": 1000,
+          "device": "cpu"
+        },
+        "inferenceTimeMs": 2152,
+        "totalTimeMs": 2170.4,
+        "warnings": [
+          "Classe trees : reconnaissance exclusive des oliviers non garantie.",
+          "Les performances du dataset ne valident pas ces nouvelles images drone.",
+          "Analyse globale a 1280 pixels : de petits arbres peuvent etre perdus ; aucun tuilage en V1.",
+          "Aucun GPS, diametre en metres, age ou diagnostic sanitaire calcule."
+        ],
+        "error": null
+      },
+      {
+        "success": true,
+        "mode": "LIVE",
+        "engine": "YOLO",
+        "imageId": "7bcab73b-8425-47b7-864d-768c3a1f046d",
+        "coordinateSystem": "IMAGE_PIXELS",
+        "imageWidth": 640,
+        "imageHeight": 640,
+        "format": "JPEG",
+        "sourceWidth": 640,
+        "sourceHeight": 640,
+        "orientationApplied": false,
+        "transparencyOnWhite": false,
+        "totalDetections": 1,
+        "rawDetectionCount": 2,
+        "roiApplied": true,
+        "detections": [
+          {
+            "id": 1,
+            "bboxPx": [
+              0.01690053939819336,
+              154.13922119140625,
+              7.347291469573975,
+              187.68441772460938
+            ],
+            "centerPx": [
+              3.682096004486084,
+              170.9118194580078
+            ],
+            "confidence": 0.279859334230423,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          }
+        ],
+        "model": "YOLO11m V1",
+        "modelPath": "C:\\Users\\pc\\Downloads\\OliveSmart-Project-main\\OliveSmart-Project-main\\models\\yolo11m_olivesmart_v1.pt",
+        "inferenceParameters": {
+          "imgsz": 1280,
+          "conf": 0.2,
+          "iou": 0.5,
+          "max_det": 1000,
+          "device": "cpu"
+        },
+        "inferenceTimeMs": 2022.7,
+        "totalTimeMs": 2029.8,
+        "warnings": [
+          "Classe trees : reconnaissance exclusive des oliviers non garantie.",
+          "Les performances du dataset ne valident pas ces nouvelles images drone.",
+          "Analyse globale a 1280 pixels : de petits arbres peuvent etre perdus ; aucun tuilage en V1.",
+          "Aucun GPS, diametre en metres, age ou diagnostic sanitaire calcule."
+        ],
+        "error": null
+      }
+    ],
+    "frontendCount": 2
+  },
+  {
+    "ok": true,
+    "width": 768,
+    "checks": [
+      "fichier réel → Java → Python YOLO → rendu, boîtes et comptages identiques",
+      "points, rectangles, les deux, sélection tactile et coordonnées pixels",
+      "changement d’image : réponse obsolète ignorée",
+      "serveur indisponible et délai : aucun résultat simulé",
+      "DEMO conservé et séparé du LIVE",
+      "aperçu EXIF orienté 80 × 120 identique à Python"
+    ],
+    "javaResults": [
+      {
+        "success": true,
+        "mode": "LIVE",
+        "engine": "YOLO",
+        "imageId": "fd20cec9-417a-488f-9de8-558086cf164d",
+        "coordinateSystem": "IMAGE_PIXELS",
+        "imageWidth": 640,
+        "imageHeight": 640,
+        "format": "JPEG",
+        "sourceWidth": 640,
+        "sourceHeight": 640,
+        "orientationApplied": false,
+        "transparencyOnWhite": false,
+        "totalDetections": 2,
+        "rawDetectionCount": 2,
+        "roiApplied": false,
+        "detections": [
+          {
+            "id": 1,
+            "bboxPx": [
+              0.01690053939819336,
+              154.13922119140625,
+              7.347291469573975,
+              187.68441772460938
+            ],
+            "centerPx": [
+              3.682096004486084,
+              170.9118194580078
+            ],
+            "confidence": 0.279859334230423,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          },
+          {
+            "id": 2,
+            "bboxPx": [
+              248.0098876953125,
+              419.18023681640625,
+              271.21124267578125,
+              456.28070068359375
+            ],
+            "centerPx": [
+              259.6105651855469,
+              437.73046875
+            ],
+            "confidence": 0.2010429948568344,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          }
+        ],
+        "model": "YOLO11m V1",
+        "modelPath": "C:\\Users\\pc\\Downloads\\OliveSmart-Project-main\\OliveSmart-Project-main\\models\\yolo11m_olivesmart_v1.pt",
+        "inferenceParameters": {
+          "imgsz": 1280,
+          "conf": 0.2,
+          "iou": 0.5,
+          "max_det": 1000,
+          "device": "cpu"
+        },
+        "inferenceTimeMs": 1877.5,
+        "totalTimeMs": 1885.3,
+        "warnings": [
+          "Classe trees : reconnaissance exclusive des oliviers non garantie.",
+          "Les performances du dataset ne valident pas ces nouvelles images drone.",
+          "Analyse globale a 1280 pixels : de petits arbres peuvent etre perdus ; aucun tuilage en V1.",
+          "Aucun GPS, diametre en metres, age ou diagnostic sanitaire calcule."
+        ],
+        "error": null
+      }
+    ],
+    "frontendCount": 2
+  },
+  {
+    "ok": true,
+    "width": 390,
+    "checks": [
+      "fichier réel → Java → Python YOLO → rendu, boîtes et comptages identiques",
+      "points, rectangles, les deux, sélection tactile et coordonnées pixels",
+      "changement d’image : réponse obsolète ignorée",
+      "serveur indisponible et délai : aucun résultat simulé",
+      "DEMO conservé et séparé du LIVE",
+      "aperçu EXIF orienté 80 × 120 identique à Python"
+    ],
+    "javaResults": [
+      {
+        "success": true,
+        "mode": "LIVE",
+        "engine": "YOLO",
+        "imageId": "6cdff13c-127c-4f1e-b83e-408a3812938c",
+        "coordinateSystem": "IMAGE_PIXELS",
+        "imageWidth": 640,
+        "imageHeight": 640,
+        "format": "JPEG",
+        "sourceWidth": 640,
+        "sourceHeight": 640,
+        "orientationApplied": false,
+        "transparencyOnWhite": false,
+        "totalDetections": 2,
+        "rawDetectionCount": 2,
+        "roiApplied": false,
+        "detections": [
+          {
+            "id": 1,
+            "bboxPx": [
+              0.01690053939819336,
+              154.13922119140625,
+              7.347291469573975,
+              187.68441772460938
+            ],
+            "centerPx": [
+              3.682096004486084,
+              170.9118194580078
+            ],
+            "confidence": 0.279859334230423,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          },
+          {
+            "id": 2,
+            "bboxPx": [
+              248.0098876953125,
+              419.18023681640625,
+              271.21124267578125,
+              456.28070068359375
+            ],
+            "centerPx": [
+              259.6105651855469,
+              437.73046875
+            ],
+            "confidence": 0.2010429948568344,
+            "classId": 0,
+            "className": "trees",
+            "source": "YOLO"
+          }
+        ],
+        "model": "YOLO11m V1",
+        "modelPath": "C:\\Users\\pc\\Downloads\\OliveSmart-Project-main\\OliveSmart-Project-main\\models\\yolo11m_olivesmart_v1.pt",
+        "inferenceParameters": {
+          "imgsz": 1280,
+          "conf": 0.2,
+          "iou": 0.5,
+          "max_det": 1000,
+          "device": "cpu"
+        },
+        "inferenceTimeMs": 1785.8,
+        "totalTimeMs": 1794.1,
+        "warnings": [
+          "Classe trees : reconnaissance exclusive des oliviers non garantie.",
+          "Les performances du dataset ne valident pas ces nouvelles images drone.",
+          "Analyse globale a 1280 pixels : de petits arbres peuvent etre perdus ; aucun tuilage en V1.",
+          "Aucun GPS, diametre en metres, age ou diagnostic sanitaire calcule."
+        ],
+        "error": null
+      }
+    ],
+    "frontendCount": 2
+  }
+]
